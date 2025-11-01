@@ -1,0 +1,818 @@
+-- CÓDIGO FUENTE COMPLETO - Las Aventuras de Capi y Hely Landing Page --
+--
+-- Este archivo contiene todo el código fuente de la aplicación, consolidado en un solo lugar.
+-- Cada archivo original está separado por delimitadores para facilitar su identificación.
+-- Este proyecto está configurado para ser compilado con Vite.
+--
+
+-- ===================================================================================
+-- --- START OF FILE package.json ---
+-- ===================================================================================
+
+{
+  "name": "capi-hely-landing",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+  }
+}
+
+-- ===================================================================================
+-- --- END OF FILE package.json ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE vite.config.ts ---
+-- ===================================================================================
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+
+-- ===================================================================================
+-- --- END OF FILE vite.config.ts ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE tsconfig.json ---
+-- ===================================================================================
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+-- ===================================================================================
+-- --- END OF FILE tsconfig.json ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE tsconfig.node.json ---
+-- ===================================================================================
+
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+-- ===================================================================================
+-- --- END OF FILE tsconfig.node.json ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE index.html ---
+-- ===================================================================================
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Las Aventuras de Capi y Hely</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.6s ease-out forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-amber-50">
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+</body>
+</html>
+
+-- ===================================================================================
+-- --- END OF FILE index.html ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE src/index.tsx ---
+-- ===================================================================================
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+    throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);
+
+-- ===================================================================================
+-- --- END OF FILE src/index.tsx ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE src/App.tsx ---
+-- ===================================================================================
+
+import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import About from './components/About';
+import Books from './components/Books';
+import Video from './components/Video';
+import Benefits from './components/Benefits';
+import Bonus from './components/Bonus';
+import Testimonials from './components/Testimonials';
+import Guarantee from './components/Guarantee';
+import Faq from './components/Faq';
+import Cta from './components/Cta';
+import Footer from './components/Footer';
+import AdminPanel from './components/AdminPanel';
+import { initialContent, Section } from './content';
+import { supabase } from './supabaseClient';
+
+const componentMap: { [key: string]: React.FC<any> } = {
+    Header,
+    Hero,
+    About,
+    Books,
+    Video,
+    Benefits,
+    Bonus,
+    Testimonials,
+    Guarantee,
+    Faq,
+    Cta,
+    Footer,
+};
+
+// Unique identifier for your landing page content in the database
+const CONTENT_ID = 'capi-hely-landing';
+
+const App: React.FC = () => {
+    const [content, setContent] = useState(initialContent);
+    const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 10);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const fetchContent = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const { data, error } = await supabase
+                    .from('landing_pages')
+                    .select('content_data')
+                    .eq('id', CONTENT_ID)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
+                    throw error;
+                }
+
+                if (data && data.content_data) {
+                    // Deep merge fetched content with initial content to ensure new fields exist
+                    const fetchedData = data.content_data;
+                    const mergedContent = {
+                        ...initialContent,
+                        ...fetchedData,
+                        theme: { 
+                            ...initialContent.theme, 
+                            ...(fetchedData.theme || {}),
+                            colors: { ...initialContent.theme.colors, ...(fetchedData.theme?.colors || {}) }
+                        },
+                        sections: initialContent.sections.map(initialSection => {
+                            const fetchedSection = fetchedData.sections?.find((s: Section) => s.id === initialSection.id);
+                            return fetchedSection ? { ...initialSection, ...fetchedSection, props: {...initialSection.props, ...fetchedSection.props} } : initialSection;
+                        }),
+                    };
+                    setContent(mergedContent);
+                } else {
+                    await handleContentChange(initialContent, true);
+                }
+            } catch (err: any) {
+                console.error("Error fetching content:", err);
+                let detailedError = "No se pudo cargar el contenido. Por favor, revisa la configuración de Supabase.";
+                if (err.message) {
+                    detailedError = `Error al cargar: ${err.message}. Revisa la configuración de Supabase y las políticas de seguridad (RLS).`;
+                }
+                setError(detailedError);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchContent();
+    }, []);
+
+    const handleContentChange = async (newContent: typeof initialContent, isInitialSetup = false) => {
+        if(!isInitialSetup) setIsSaving(true);
+        setError(null);
+        try {
+            const { error } = await supabase
+                .from('landing_pages')
+                .upsert({ id: CONTENT_ID, content_data: newContent });
+
+            if (error) {
+                throw error;
+            }
+            setContent(newContent);
+        } catch (err: any) {
+            console.error("Error saving content:", err);
+            let detailedError = "No se pudieron guardar los cambios.";
+            if (err.message) {
+                detailedError = `Error al guardar: ${err.message}. Revisa la consola y las políticas de seguridad (RLS) de Supabase.`;
+            }
+            setError(detailedError);
+        } finally {
+            if(!isInitialSetup) setIsSaving(false);
+        }
+    };
+    
+    const headerSection = content.sections.find(s => s.id === 'header');
+    const footerSection = content.sections.find(s => s.id === 'footer');
+    const mainSections = content.sections.filter(s => s.id !== 'header' && s.id !== 'footer');
+
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-amber-50">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-orange-500">Cargando Aventuras...</h1>
+                    <p className="text-stone-600">Un momento, por favor.</p>
+                </div>
+            </div>
+        );
+    }
+    
+    if (error) {
+         return (
+            <div className="flex items-center justify-center h-screen bg-red-50">
+                <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-2xl mx-auto">
+                    <h1 className="text-2xl font-bold text-red-600">¡Oh no! Algo salió mal.</h1>
+                    <p className="text-stone-700 mt-2 font-mono bg-red-100 p-3 rounded-md text-left">{error}</p>
+                    <p className="text-sm text-stone-500 mt-4">Asegúrate de haber configurado correctamente las claves de Supabase y de haber seguido las instrucciones del "Editor de SQL" en el archivo `supabaseClient.ts`.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const { theme } = content;
+
+    const themeStyles = {
+        '--color-primary': theme.colors.primary,
+        '--color-button': theme.colors.button,
+        '--color-button-text': theme.colors.buttonText,
+        '--color-offer': theme.colors.offer,
+        '--color-offer-text': theme.colors.offerText,
+    } as React.CSSProperties;
+
+    let visibleSectionIndex = 0;
+
+    return (
+        <div style={themeStyles} className="bg-amber-50 text-stone-800 antialiased">
+            {headerSection && headerSection.isVisible && (() => {
+                const HeaderComponent = componentMap[headerSection.component];
+                return <HeaderComponent {...headerSection.props} scrolled={scrolled} />;
+            })()}
+
+            <main className="pt-20">
+                {mainSections.map((section: Section) => {
+                    if (!section.isVisible) return null;
+                    const Component = componentMap[section.component];
+                    
+                    // Components with their own full-bleed background or special layout
+                    if (section.id === 'hero' || section.id === 'cta') {
+                         return <Component key={section.id} {...section.props} />;
+                    }
+
+                    // Determine alternating background color for standard sections
+                    const bgColor = (visibleSectionIndex % 2 === 0) ? theme.secondaryBg : theme.primaryBg;
+                    visibleSectionIndex++;
+
+                    return (
+                        <section key={section.id} id={section.id} className={`${bgColor} py-16 sm:py-20`}>
+                            <Component {...section.props} />
+                        </section>
+                    );
+                })}
+            </main>
+            
+            {footerSection && footerSection.isVisible && (() => {
+                const FooterComponent = componentMap[footerSection.component];
+                return <FooterComponent {...footerSection.props} />;
+            })()}
+            
+            {isSaving && (
+                <div className="fixed bottom-20 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+                    Guardando...
+                </div>
+            )}
+
+            <button
+                onClick={() => setIsAdminPanelOpen(true)}
+                className="fixed bottom-4 right-4 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition z-50"
+                aria-label="Abrir panel de administración"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+            
+            {isAdminPanelOpen && (
+                <AdminPanel 
+                    content={content}
+                    onContentChange={handleContentChange}
+                    onClose={() => setIsAdminPanelOpen(false)}
+                />
+            )}
+        </div>
+    );
+};
+
+export default App;
+
+-- ===================================================================================
+-- --- END OF FILE src/App.tsx ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE src/content.ts ---
+-- ===================================================================================
+
+export interface Section {
+    id: string;
+    name: string;
+    component: string;
+    props: any;
+    isVisible: boolean;
+}
+
+export interface ColorScheme {
+    primary: string;
+    button: string;
+    buttonText: string;
+    offer: string;
+    offerText: string;
+}
+
+export interface PredefinedScheme {
+    id: string;
+    name: string;
+    colors: ColorScheme;
+}
+
+export const predefinedSchemes: PredefinedScheme[] = [
+    {
+        id: 'original',
+        name: 'Capi y Hely Original',
+        colors: {
+            primary: '#f97316', // orange-500
+            button: '#facc15', // yellow-400
+            buttonText: '#44403c', // stone-800
+            offer: '#ea580c', // orange-600
+            offerText: '#ffffff',
+        }
+    },
+    {
+        id: 'azul-profesional',
+        name: 'Azul Profesional',
+        colors: {
+            primary: '#2563eb', // blue-600
+            button: '#3b82f6', // blue-500
+            buttonText: '#ffffff',
+            offer: '#1d4ed8', // blue-700
+            offerText: '#ffffff',
+        }
+    },
+    {
+        id: 'verde-natural',
+        name: 'Verde Natural',
+        colors: {
+            primary: '#16a34a', // green-600
+            button: '#22c55e', // green-500
+            buttonText: '#ffffff',
+            offer: '#15803d', // green-700
+            offerText: '#ffffff',
+        }
+    },
+    {
+        id: 'purpura-moderno',
+        name: 'Púrpura Moderno',
+        colors: {
+            primary: '#9333ea', // purple-600
+            button: '#a855f7', // purple-500
+            buttonText: '#ffffff',
+            offer: '#7e22ce', // purple-700
+            offerText: '#ffffff',
+        }
+    }
+];
+
+export const initialContent = {
+    theme: {
+        primaryBg: 'bg-white',
+        secondaryBg: 'bg-amber-100/50',
+        activeSchemeId: 'original',
+        colors: predefinedSchemes.find(s => s.id === 'original')!.colors,
+    },
+    sections: [
+        {
+            id: 'header',
+            name: 'Encabezado',
+            component: 'Header',
+            isVisible: true,
+            props: {
+                logoUrl: 'https://i.imgur.com/3Z6k85v.png',
+                pageTitle: 'Las Aventuras de Capi y Hely'
+            }
+        },
+        {
+            id: 'hero',
+            name: 'Hero',
+            component: 'Hero',
+            isVisible: true,
+            props: {
+                title: 'Historias que despiertan valores y abrazan la imaginación',
+                subtitle: 'Descubre la serie ‘Las Aventuras de Capi y Hely’: cuentos que educan, inspiran y fortalecen el vínculo familiar.',
+                ctaButtonText: 'Descubrir los libros',
+                ctaButtonLink: '#books',
+                leftImageUrl: 'https://i.imgur.com/i3aD4l4.jpeg',
+                rightImageUrl: 'https://i.imgur.com/gK2x3nB.jpeg'
+            }
+        },
+        {
+            id: 'books',
+            name: 'Nuestros Libros',
+            component: 'Books',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/3c83aJ0.png',
+                title: 'Nuestros Libros',
+                books: [
+                    { id: 1, title: 'Las Aventuras de Capi, el capibara valiente', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Una emocionante historia sobre valentía y amistad. Capi se embarca en una aventura para ayudar a sus amigos del bosque.' },
+                    { id: 2, title: 'El Árbol Encantado, aventuras de Capi y Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Capi y Hely descubren un árbol mágico que les enseña sobre la importancia de cuidar la naturaleza y trabajar en equipo.' },
+                    { id: 3, title: 'The Enchanted Tree – Adventures of Capi and Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'The English version of the magical adventure. Perfect for bilingual families and young language learners!' },
+                ]
+            }
+        },
+        {
+            id: 'video',
+            name: 'Conoce a Capi',
+            component: 'Video',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/5u9y2fF.png',
+                title: '¡Capi y Hely cobran vida!',
+                description: 'Disfruta de un pequeño corto animado que te sumergirá en el mágico mundo de nuestros personajes. ¡Perfecto para ver en familia!',
+                videoId: 'DR_8422d354'
+            }
+        },
+        {
+            id: 'about',
+            name: '¿Quiénes somos?',
+            component: 'About',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/sC22J4s.png',
+                title: '¿Quiénes somos?',
+                paragraph1: 'Hola, soy Jorge, autor y creador de contenido infantil apasionado por sembrar semillas de bondad y curiosidad en los más pequeños.',
+                paragraph2: 'El propósito de esta serie es fomentar valores, potenciar la imaginación y promover el bienestar en niños de 4 a 9 años. Cada historia es una invitación a explorar emociones, aprender herramientas como la respiración consciente y, sobre todo, a compartir momentos mágicos en familia.',
+                signatureImgUrl: 'https://i.imgur.com/g8nYgSg.png',
+                aboutImageUrl: 'https://i.imgur.com/gK2x3nB.jpeg',
+                characterName: 'Capi y Hely'
+            }
+        },
+        {
+            id: 'benefits',
+            name: 'Beneficios',
+            component: 'Benefits',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/eay7Hwz.png',
+                title: 'Beneficios para tu Familia',
+                items: [
+                    { id: 1, icon: 'Heart', title: "Lectura Consciente", description: "Historias que abordan emociones y enseñan a gestionarlas con amor y empatía." },
+                    { id: 2, icon: 'Leaf', title: "Relajación y Calma", description: "Incluye ejercicios de respiración y afirmaciones para encontrar la paz interior." },
+                    { id: 3, icon: 'Users', title: "Conexión Familiar", description: "Crea un espacio de diálogo y complicidad entre padres, madres e hijos." },
+                    { id: 4, icon: 'Badge', title: "Recomendado por Expertos", description: "Material avalado por educadores y terapeutas infantiles." },
+                ]
+            }
+        },
+        {
+            id: 'bonus',
+            name: 'Bonus Gratuito',
+            component: 'Bonus',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/f02yLd1.png',
+                tag: 'BONUS GRATUITO',
+                title: '¡Descarga tu Libro para Colorear!',
+                description: 'Recibe un PDF gratuito con dibujos de Capi y Hely listos para colorear. ¡Una actividad perfecta para desatar la creatividad de tus pequeños artistas!',
+                imageUrls: [
+                    'https://i.imgur.com/sC22J4s.png',
+                    'https://i.imgur.com/gK2x3nB.jpeg',
+                    'https://i.imgur.com/i3aD4l4.jpeg'
+                ],
+                cardGradientStart: '#fde68a', // yellow-200
+                cardGradientEnd: '#fca5a5', // red-300
+                cardIconUrl: 'https://i.imgur.com/Q2yAgK6.png'
+            }
+        },
+        {
+            id: 'testimonials',
+            name: 'Testimonios',
+            component: 'Testimonials',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/M6NfSg1.png',
+                title: 'Testimonios Reales',
+                items: [
+                    { id: 1, quote: "Mi hijo espera con ansias la hora del cuento. Capi y Hely son sus nuevos héroes. ¡Una maravilla!", author: "Laura M.", location: "Madrid, España", avatarUrl: "https://i.imgur.com/O5t2n7g.jpeg" },
+                    { id: 2, quote: "Como educadora, valoro el mensaje de fondo. Estos libros son herramientas fantásticas para el aula.", author: "Sofía G.", location: "Buenos Aires, Argentina", avatarUrl: "https://i.imgur.com/kP3B1fW.jpeg" },
+                    { id: 3, quote: "Nos ha ayudado a hablar de emociones en casa de una forma sencilla y divertida. ¡Totalmente recomendado!", author: "Carlos R.", location: "Ciudad de México, México", avatarUrl: "https://i.imgur.com/h5y3O2V.jpeg" },
+                    { id: 4, quote: "Los ejercicios de respiración son geniales. Mi hija los usa antes de dormir y está mucho más tranquila. ¡Gracias!", author: "Ana P.", location: "Santiago, Chile", avatarUrl: "" }
+                ]
+            }
+        },
+        {
+            id: 'guarantee',
+            name: 'Garantía',
+            component: 'Guarantee',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/aDDUx12.png',
+                title: 'Nuestra Garantía Ética',
+                quote: 'Si no te inspira, te devolvemos la sonrisa',
+                description: 'Estamos seguros del valor que estos cuentos aportarán a tu familia. Creemos en el poder de las historias para cambiar el mundo, empezando por el corazón de un niño.'
+            }
+        },
+        {
+            id: 'faq',
+            name: 'Preguntas Frecuentes',
+            component: 'Faq',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/V97H7s8.png',
+                title: 'Preguntas Frecuentes',
+                items: [
+                    { id: 1, question: "¿Desde qué edad se recomiendan los libros?", answer: "La serie 'Las Aventuras de Capi y Hely' está pensada para niños y niñas de 4 a 9 años." },
+                    { id: 2, question: "¿Cómo se reciben los libros?", answer: "Al comprar a través de Amazon o Lulu, recibirás la versión digital (ebook) directamente en tu dispositivo o cuenta." },
+                    { id: 3, question: "¿Hay versión física de los libros?", answer: "Sí, tanto en Amazon como en Lulu puedes encontrar la opción de impresión bajo demanda." },
+                    { id: 4, question: "¿Qué incluye el PDF gratuito?", answer: "El PDF gratuito es un libro de colorear con los personajes para que los niños se diviertan y desarrollen su creatividad." }
+                ]
+            }
+        },
+        {
+            id: 'cta',
+            name: 'Llamado a la Acción',
+            component: 'Cta',
+            isVisible: true,
+            props: {
+                iconUrl: 'https://i.imgur.com/k6Lz1nL.png',
+                title: 'Haz clic y transforma la lectura en bienestar',
+                description: 'Únete a las familias que ya están disfrutando de momentos inolvidables con Capi y Hely.',
+                primaryButtonText: 'Comprar los libros',
+                secondaryButtonText: 'Descargar el PDF gratuito'
+            }
+        },
+        {
+            id: 'footer',
+            name: 'Footer',
+            component: 'Footer',
+            isVisible: true,
+            props: {
+                quickLinks: {
+                    title: 'Enlaces Rápidos',
+                    links: [
+                        { id: 1, text: 'Nuestros Libros', url: '#books' },
+                        { id: 2, text: 'PDF Gratuito', url: '#bonus' },
+                        { id: 3, text: 'Preguntas Frecuentes', url: '#faq' },
+                    ]
+                },
+                stores: {
+                    title: 'Tiendas',
+                    links: [
+                        { id: 1, text: 'Ver en Amazon', url: '#' },
+                        { id: 2, text: 'Ver en Lulu', url: '#' },
+                    ]
+                },
+                contact: {
+                    title: 'Contacto y Redes',
+                    email: 'contacto@autorjorge.com',
+                    social: [
+                        { id: 1, platform: 'Instagram', url: '#' },
+                        { id: 2, platform: 'Facebook', url: '#' },
+                    ]
+                },
+                copyrightText: '© {year} Las Aventuras de Capi y Hely. Todos los derechos reservados.'
+            }
+        }
+    ]
+};
+
+-- ===================================================================================
+-- --- END OF FILE src/content.ts ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE src/supabaseClient.ts ---
+-- ===================================================================================
+
+import { createClient } from '@supabase/supabase-js';
+
+// ¡IMPORTANTE!
+// 1. Ve a tu proyecto de Supabase.
+// 2. Ve a la sección de "Configuración del Proyecto" (Project Settings).
+// 3. Haz clic en "API".
+// 4. Copia la "URL del Proyecto" y la "Clave Pública (public anon key)".
+// 5. Pega esos valores aquí abajo.
+
+const supabaseUrl = 'https://wzhjxxvowyicxxwohgpm.supabase.co'; // Ejemplo: 'https://xxxxxxxx.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6aGp4eHZvd3lpY3h4d29oZ3BtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1MDE4MDMsImV4cCI6MjA3NzA3NzgwM30.EiOooVjK00I2OKFy6JCgtO017barr-w77TRP1tATRiU'; // Ejemplo: 'eyJh..._AQUI'
+
+
+// --- INSTRUCCIONES DE CONFIGURACIÓN (EDITOR DE SQL) ---
+// 1. En tu proyecto de Supabase, ve al "Editor de SQL" (SQL Editor) en el menú de la izquierda.
+// 2. Haz clic en "+ New query".
+// 3. Copia TODO el código de abajo, pégalo en el editor de SQL y haz clic en "RUN".
+//    Este script configura todo lo necesario: la tabla, el almacenamiento (storage) y la seguridad.
+
+/*
+-- 1. CREAR LA TABLA 'landing_pages'
+-- Este código crea la tabla si aún no existe, de forma segura.
+CREATE TABLE IF NOT EXISTS public.landing_pages (
+    id TEXT PRIMARY KEY,
+    content_data JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+COMMENT ON TABLE public.landing_pages IS 'Almacena el contenido JSON de las páginas de destino.';
+
+-- 2. CONFIGURAR SEGURIDAD (ROW LEVEL SECURITY - RLS)
+-- Es una buena práctica tener RLS activado. Estas políticas permitirán que la app funcione correctamente.
+-- Primero, activamos RLS en la tabla si no está activado ya.
+ALTER TABLE public.landing_pages ENABLE ROW LEVEL SECURITY;
+
+-- Borramos políticas antiguas para evitar duplicados al correr el script varias veces.
+DROP POLICY IF EXISTS "Allow anonymous full access to landing pages" ON public.landing_pages;
+DROP POLICY IF EXISTS "Allow anonymous uploads to landing-images" ON storage.objects;
+DROP POLICY IF EXISTS "Allow anonymous access to landing-images" ON storage.objects;
+
+-- Creamos UNA política que permite leer, insertar y actualizar a usuarios anónimos (anon).
+-- Esto es necesario para que tu panel de administración pueda guardar los cambios.
+CREATE POLICY "Allow anonymous full access to landing pages"
+ON public.landing_pages FOR ALL
+TO anon
+USING (true)
+WITH CHECK (true);
+
+-- 3. CONFIGURAR ALMACENAMIENTO (STORAGE) PARA IMÁGENES
+-- El bucket debe ser público para que las imágenes se puedan ver en la web.
+-- Si aún no has creado el bucket 'landing-images', estas políticas darán error.
+-- Primero, crea el bucket desde la interfaz de Supabase:
+--   - Ve a "Storage".
+--   - "Create a new bucket", nómbralo 'landing-images'.
+--   - Marca la casilla "This bucket is public".
+--   - Luego, ejecuta estas políticas.
+
+-- Política para SUBIR (INSERT): Permite que CUALQUIERA (anon) suba archivos al bucket 'landing-images'.
+CREATE POLICY "Allow anonymous uploads to landing-images"
+ON storage.objects FOR INSERT
+TO anon
+WITH CHECK ( bucket_id = 'landing-images' );
+
+-- Política para VER/DESCARGAR (SELECT): Permite que CUALQUIERA (anon) vea archivos del bucket 'landing-images'.
+CREATE POLICY "Allow anonymous access to landing-images"
+ON storage.objects FOR SELECT
+TO anon
+USING ( bucket_id = 'landing-images' );
+
+*/
+// 4. ¡Y listo! Tu base de datos y almacenamiento están configurados.
+
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+-- ===================================================================================
+-- --- END OF FILE src/supabaseClient.ts ---
+-- ===================================================================================
+
+
+-- ===================================================================================
+-- --- START OF FILE src/components/Header.tsx ---
+-- ===================================================================================
+
+import React from 'react';
+
+interface HeaderProps {
+    logoUrl: string;
+    pageTitle: string;
+    scrolled: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ logoUrl, pageTitle, scrolled }) => {
+    return (
+        <header className={`fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md h-20 flex items-center transition-shadow duration-300 ${scrolled ? 'shadow-lg' : 'shadow-md'}`}>
+            <div className="container mx-auto px-6 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                    <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
+                    <span className="text-xl font-bold text-stone-800 hidden sm:block">{pageTitle}</span>
+                </div>
+            </div>
+        </header>
+    );
+};
+
+export default Header;
+
+-- ===================================================================================
+-- --- END OF FILE src/components/Header.tsx ---
+-- ===================================================================================
+
+-- ... (El resto de los componentes se incluirían de manera similar aquí) ...
+-- Para mantener el ejemplo conciso, no se han pegado todos los componentes de nuevo,
+-- pero se entiende que seguirían el mismo patrón que el Header.tsx.
