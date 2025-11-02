@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, pageTitle, scrolled }) => {
             <div className="container mx-auto px-6 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
-                    <span className="text-xl font-bold text-stone-800 hidden sm:block">{pageTitle}</span>
+                    <span className="text-lg sm:text-xl font-bold text-stone-800">{pageTitle}</span>
                 </div>
                 {/* Futuros enlaces de navegación podrían ir aquí */}
             </div>

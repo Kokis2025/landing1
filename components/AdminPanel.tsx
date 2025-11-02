@@ -139,22 +139,25 @@ const ImageInput: React.FC<{ label: string; imageUrl: string; onImageChange: (ur
 };
 
 
-const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) => void }> = ({ checked, onChange }) => (
-    <button
-        type="button"
-        className={`${
-            checked ? 'bg-indigo-600' : 'bg-stone-300'
-        } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-    >
-        <span
+const ToggleSwitch: React.FC<{ label: string, checked: boolean; onChange: (checked: boolean) => void }> = ({ label, checked, onChange }) => (
+    <div className="flex items-center justify-between">
+        <label className="block text-sm font-medium text-stone-700">{label}</label>
+        <button
+            type="button"
             className={`${
-                checked ? 'translate-x-6' : 'translate-x-1'
-            } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
-        />
-    </button>
+                checked ? 'bg-indigo-600' : 'bg-stone-300'
+            } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+            role="switch"
+            aria-checked={checked}
+            onClick={() => onChange(!checked)}
+        >
+            <span
+                className={`${
+                    checked ? 'translate-x-6' : 'translate-x-1'
+                } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+            />
+        </button>
+    </div>
 );
 
 
@@ -182,6 +185,7 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
             <TextareaInput label="Subtítulo" value={section.props.subtitle} onChange={e => onUpdate({ ...section.props, subtitle: e.target.value })} />
             <TextInput label="Texto del Botón" value={section.props.ctaButtonText} onChange={e => onUpdate({ ...section.props, ctaButtonText: e.target.value })} />
             <TextInput label="Enlace del Botón" value={section.props.ctaButtonLink} onChange={e => onUpdate({ ...section.props, ctaButtonLink: e.target.value })} />
+            <ToggleSwitch label="Mostrar Botón de Acción" checked={section.props.isCtaButtonVisible} onChange={val => onUpdate({ ...section.props, isCtaButtonVisible: val })} />
             <ImageInput label="Imagen Izquierda (Fondo)" imageUrl={section.props.leftImageUrl} onImageChange={url => onUpdate({ ...section.props, leftImageUrl: url })} />
             <ImageInput label="Imagen Derecha (Principal)" imageUrl={section.props.rightImageUrl} onImageChange={url => onUpdate({ ...section.props, rightImageUrl: url })} />
         </SectionEditor>
@@ -198,42 +202,77 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
         </SectionEditor>
     ),
     Books: ({ section, onUpdate }) => {
-        const handleBookChange = (index: number, field: string, value: string | number) => {
-            const newBooks = [...section.props.books];
-            newBooks[index] = { ...newBooks[index], [field]: value };
-            onUpdate({ ...section.props, books: newBooks });
+        const handleSectionTitleChange = (sectionIndex: number, value: string) => {
+            const newBookSections = [...section.props.bookSections];
+            newBookSections[sectionIndex].title = value;
+            onUpdate({ ...section.props, bookSections: newBookSections });
         };
-        const handleBookImageChange = (index: number, url: string) => {
-            const newBooks = [...section.props.books];
-            newBooks[index] = { ...newBooks[index], imageUrl: url };
-            onUpdate({ ...section.props, books: newBooks });
+    
+        const addBookSection = () => {
+            const newBookSections = [...section.props.bookSections, { id: Date.now(), title: 'Nueva Sección', books: [] }];
+            onUpdate({ ...section.props, bookSections: newBookSections });
         };
-        const addBook = () => {
-             const newBooks = [...section.props.books, { id: Date.now(), title: 'Nuevo Libro', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Añade una descripción aquí.' }];
-             onUpdate({ ...section.props, books: newBooks });
+    
+        const removeBookSection = (sectionIndex: number) => {
+            const newBookSections = section.props.bookSections.filter((_: any, i: number) => i !== sectionIndex);
+            onUpdate({ ...section.props, bookSections: newBookSections });
         };
-        const removeBook = (index: number) => {
-            const newBooks = section.props.books.filter((_:any, i:number) => i !== index);
-            onUpdate({ ...section.props, books: newBooks });
+    
+        const handleBookChange = (sectionIndex: number, bookIndex: number, field: string, value: string | number) => {
+            const newBookSections = [...section.props.bookSections];
+            newBookSections[sectionIndex].books[bookIndex] = { ...newBookSections[sectionIndex].books[bookIndex], [field]: value };
+            onUpdate({ ...section.props, bookSections: newBookSections });
         };
+    
+        const handleBookImageChange = (sectionIndex: number, bookIndex: number, url: string) => {
+            const newBookSections = [...section.props.bookSections];
+            newBookSections[sectionIndex].books[bookIndex].imageUrl = url;
+            onUpdate({ ...section.props, bookSections: newBookSections });
+        };
+    
+        const addBook = (sectionIndex: number) => {
+            const newBookSections = [...section.props.bookSections];
+            const newBook = { id: Date.now(), title: 'Nuevo Libro', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Añade una descripción aquí.' };
+            newBookSections[sectionIndex].books.push(newBook);
+            onUpdate({ ...section.props, bookSections: newBookSections });
+        };
+    
+        const removeBook = (sectionIndex: number, bookIndex: number) => {
+            const newBookSections = [...section.props.bookSections];
+            newBookSections[sectionIndex].books = newBookSections[sectionIndex].books.filter((_: any, i: number) => i !== bookIndex);
+            onUpdate({ ...section.props, bookSections: newBookSections });
+        };
+    
         return (
             <SectionEditor section={section}>
                 <ImageInput label="Icono de Sección (3D)" imageUrl={section.props.iconUrl} onImageChange={url => onUpdate({ ...section.props, iconUrl: url })} />
-                <TextInput label="Título de la Sección" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
+                <TextInput label="Título Principal de la Sección" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
+                
+                <h4 className="text-md font-bold text-stone-700 pt-4 mt-6 border-t">Categorías de Libros</h4>
                 <div className="space-y-6">
-                    {section.props.books.map((book: any, index: number) => (
-                        <div key={book.id} className="p-4 border rounded-lg bg-white space-y-4">
-                             <TextInput label="Título del Libro" value={book.title} onChange={e => handleBookChange(index, 'title', e.target.value)} />
-                             <TextInput label="URL de la Tienda" value={book.link} onChange={e => handleBookChange(index, 'link', e.target.value)} />
-                             <TextInput label="Nombre de la Tienda" value={book.store} onChange={e => handleBookChange(index, 'store', e.target.value)} />
-                             <NumberInput label="Calificación (0-5)" value={book.rating} onChange={e => handleBookChange(index, 'rating', parseInt(e.target.value, 10))} min={0} max={5} />
-                             <TextareaInput label="Descripción de la Contraportada" value={book.backsideDescription} onChange={e => handleBookChange(index, 'backsideDescription', e.target.value)} />
-                             <ImageInput label="Portada del Libro" imageUrl={book.imageUrl} onImageChange={url => handleBookImageChange(index, url)} />
-                             <button onClick={() => removeBook(index)} className="mt-2 text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Libro</button>
+                    {section.props.bookSections?.map((bookSection: any, sectionIndex: number) => (
+                        <div key={bookSection.id} className="p-4 border-2 border-stone-200 rounded-lg bg-white space-y-4">
+                            <div className="flex justify-between items-center gap-4 pb-4 border-b">
+                                <TextInput label="Título de Categoría" value={bookSection.title} onChange={e => handleSectionTitleChange(sectionIndex, e.target.value)} />
+                                <button onClick={() => removeBookSection(sectionIndex)} className="mt-6 text-red-600 hover:text-red-800 text-sm font-semibold whitespace-nowrap">Eliminar Categoría</button>
+                            </div>
+                            
+                            {bookSection.books.map((book: any, bookIndex: number) => (
+                                <div key={book.id} className="p-4 border rounded-lg bg-stone-50 space-y-4">
+                                    <TextInput label="Título del Libro" value={book.title} onChange={e => handleBookChange(sectionIndex, bookIndex, 'title', e.target.value)} />
+                                    <TextInput label="URL de la Tienda" value={book.link} onChange={e => handleBookChange(sectionIndex, bookIndex, 'link', e.target.value)} />
+                                    <TextInput label="Nombre de la Tienda" value={book.store} onChange={e => handleBookChange(sectionIndex, bookIndex, 'store', e.target.value)} />
+                                    <NumberInput label="Calificación (0-5)" value={book.rating} onChange={e => handleBookChange(sectionIndex, bookIndex, 'rating', parseInt(e.target.value, 10))} min={0} max={5} />
+                                    <TextareaInput label="Descripción de la Contraportada" value={book.backsideDescription} onChange={e => handleBookChange(sectionIndex, bookIndex, 'backsideDescription', e.target.value)} />
+                                    <ImageInput label="Portada del Libro" imageUrl={book.imageUrl} onImageChange={url => handleBookImageChange(sectionIndex, bookIndex, url)} />
+                                    <button onClick={() => removeBook(sectionIndex, bookIndex)} className="mt-2 text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Libro</button>
+                                </div>
+                            ))}
+                             <button onClick={() => addBook(sectionIndex)} className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm">Añadir Libro a "{bookSection.title}"</button>
                         </div>
                     ))}
                 </div>
-                <button onClick={addBook} className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">Añadir Libro</button>
+                <button onClick={addBookSection} className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">Añadir Categoría de Libros</button>
             </SectionEditor>
         );
     },
@@ -245,13 +284,55 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
              <TextInput label="ID del Video de YouTube" value={section.props.videoId} onChange={e => onUpdate({ ...section.props, videoId: e.target.value })} />
         </SectionEditor>
     ),
-    Benefits: ({ section, onUpdate }) => (
-        <SectionEditor section={section}>
-             <ImageInput label="Icono de Sección (3D)" imageUrl={section.props.iconUrl} onImageChange={url => onUpdate({ ...section.props, iconUrl: url })} />
-             <TextInput label="Título" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
-             <p className="text-sm text-stone-500">La edición de ítems de beneficios se puede agregar aquí.</p>
-        </SectionEditor>
-    ),
+    Benefits: ({ section, onUpdate }) => {
+        const handleItemChange = (index: number, field: string, value: string) => {
+            const newItems = [...section.props.items];
+            newItems[index] = { ...newItems[index], [field]: value };
+            onUpdate({ ...section.props, items: newItems });
+        };
+    
+        const addItem = () => {
+            const newItems = [...section.props.items, { id: Date.now(), icon: 'Heart', title: "Nuevo Beneficio", description: "Añade una descripción aquí." }];
+            onUpdate({ ...section.props, items: newItems });
+        };
+    
+        const removeItem = (index: number) => {
+            const newItems = section.props.items.filter((_: any, i: number) => i !== index);
+            onUpdate({ ...section.props, items: newItems });
+        };
+    
+        return (
+            <SectionEditor section={section}>
+                <ImageInput label="Icono de Sección (3D)" imageUrl={section.props.iconUrl} onImageChange={url => onUpdate({ ...section.props, iconUrl: url })} />
+                <TextInput label="Título" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
+                
+                <h4 className="text-md font-bold text-stone-700 pt-4 mt-6 border-t">Ítems de Beneficios</h4>
+                <div className="space-y-6">
+                    {section.props.items.map((item: any, index: number) => (
+                        <div key={item.id} className="p-4 border rounded-lg bg-white space-y-4">
+                            <TextInput label="Título del Beneficio" value={item.title} onChange={e => handleItemChange(index, 'title', e.target.value)} />
+                            <TextareaInput label="Descripción" value={item.description} onChange={e => handleItemChange(index, 'description', e.target.value)} />
+                            <div>
+                                <label className="block text-sm font-medium text-stone-700 mb-1">Icono</label>
+                                <select 
+                                    value={item.icon} 
+                                    onChange={e => handleItemChange(index, 'icon', e.target.value)}
+                                    className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                                >
+                                    <option value="Heart">Corazón (Lectura Consciente)</option>
+                                    <option value="Leaf">Hoja (Relajación)</option>
+                                    <option value="Users">Usuarios (Conexión Familiar)</option>
+                                    <option value="Badge">Insignia (Recomendado)</option>
+                                </select>
+                            </div>
+                            <button onClick={() => removeItem(index)} className="mt-2 text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Beneficio</button>
+                        </div>
+                    ))}
+                </div>
+                <button onClick={addItem} className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">Añadir Beneficio</button>
+            </SectionEditor>
+        );
+    },
     Bonus: ({ section, onUpdate }) => {
         const handleImageChange = (index: number, url: string) => {
             const newImageUrls = [...section.props.imageUrls];
@@ -339,26 +420,153 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
              <TextareaInput label="Descripción" value={section.props.description} onChange={e => onUpdate({ ...section.props, description: e.target.value })} />
         </SectionEditor>
     ),
-    Faq: ({ section, onUpdate }) => (
-        <SectionEditor section={section}>
-             <ImageInput label="Icono de Sección (3D)" imageUrl={section.props.iconUrl} onImageChange={url => onUpdate({ ...section.props, iconUrl: url })} />
-             <TextInput label="Título" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
-             <p className="text-sm text-stone-500">La edición de ítems de FAQ se puede agregar aquí.</p>
-        </SectionEditor>
-    ),
+    Faq: ({ section, onUpdate }) => {
+        const props = section.props;
+        const handleItemChange = (index: number, field: 'question' | 'answer', value: string) => {
+            const newItems = [...props.items];
+            newItems[index] = { ...newItems[index], [field]: value };
+            onUpdate({ ...props, items: newItems });
+        };
+        const addItem = () => {
+             const newItems = [...props.items, { id: Date.now(), question: 'Nueva Pregunta', answer: 'Añade la respuesta aquí.' }];
+             onUpdate({ ...props, items: newItems });
+        };
+        const removeItem = (index: number) => {
+            const newItems = props.items.filter((_:any, i:number) => i !== index);
+            onUpdate({ ...props, items: newItems });
+        };
+        return (
+            <SectionEditor section={section}>
+                 <ImageInput label="Icono de Sección (3D)" imageUrl={props.iconUrl} onImageChange={url => onUpdate({ ...props, iconUrl: url })} />
+                 <TextInput label="Título de la Sección" value={props.title} onChange={e => onUpdate({ ...props, title: e.target.value })} />
+                 <h4 className="text-md font-bold text-stone-700 pt-4 mt-6 border-t">Preguntas y Respuestas</h4>
+                 <div className="space-y-6">
+                     {props.items.map((item: any, index: number) => (
+                         <div key={item.id} className="p-4 border rounded-lg bg-white space-y-4">
+                              <TextInput label="Pregunta" value={item.question} onChange={e => handleItemChange(index, 'question', e.target.value)} />
+                              <TextareaInput label="Respuesta" value={item.answer} onChange={e => handleItemChange(index, 'answer', e.target.value)} />
+                              <button onClick={() => removeItem(index)} className="mt-2 text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Pregunta</button>
+                         </div>
+                     ))}
+                 </div>
+                 <button onClick={addItem} className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">Añadir Pregunta</button>
+            </SectionEditor>
+        );
+    },
     Cta: ({ section, onUpdate }) => (
          <SectionEditor section={section}>
              <ImageInput label="Icono de Sección (3D)" imageUrl={section.props.iconUrl} onImageChange={url => onUpdate({ ...section.props, iconUrl: url })} />
              <TextInput label="Título" value={section.props.title} onChange={e => onUpdate({ ...section.props, title: e.target.value })} />
              <TextareaInput label="Descripción" value={section.props.description} onChange={e => onUpdate({ ...section.props, description: e.target.value })} />
+             <TextInput label="Texto Botón Principal" value={section.props.primaryButtonText} onChange={e => onUpdate({ ...section.props, primaryButtonText: e.target.value })} />
+             <TextInput label="Texto Botón Secundario" value={section.props.secondaryButtonText} onChange={e => onUpdate({ ...section.props, secondaryButtonText: e.target.value })} />
         </SectionEditor>
     ),
-    Footer: ({ section, onUpdate }) => (
-        <SectionEditor section={section}>
-             <TextareaInput label="Texto de Copyright" value={section.props.copyrightText} onChange={e => onUpdate({ ...section.props, copyrightText: e.target.value })} />
-             <p className="text-sm text-stone-500">La edición de links del footer se puede agregar aquí.</p>
-        </SectionEditor>
-    ),
+    Footer: ({ section, onUpdate }) => {
+        const props = section.props;
+    
+        const handlePropChange = (propName: string, value: any) => {
+            onUpdate({ ...props, [propName]: value });
+        };
+    
+        const handleNestedPropChange = (topLevel: string, nested: string, value: any) => {
+            handlePropChange(topLevel, { ...props[topLevel], [nested]: value });
+        };
+    
+        const handleLinkListChange = (listName: 'quickLinks' | 'stores', index: number, field: 'text' | 'url', value: string) => {
+            const newList = [...props[listName].links];
+            newList[index] = { ...newList[index], [field]: value };
+            handleNestedPropChange(listName, 'links', newList);
+        };
+    
+        const addLink = (listName: 'quickLinks' | 'stores') => {
+            const newList = [...props[listName].links, { id: Date.now(), text: 'Nuevo Enlace', url: '#' }];
+            handleNestedPropChange(listName, 'links', newList);
+        };
+    
+        const removeLink = (listName: 'quickLinks' | 'stores', index: number) => {
+            const newList = props[listName].links.filter((_: any, i: number) => i !== index);
+            handleNestedPropChange(listName, 'links', newList);
+        };
+    
+        const handleSocialChange = (index: number, field: 'platform' | 'url', value: string) => {
+            const newSocials = [...props.contact.social];
+            newSocials[index] = { ...newSocials[index], [field]: value };
+            handleNestedPropChange('contact', 'social', newSocials);
+        };
+    
+        const addSocial = () => {
+            const newSocials = [...props.contact.social, { id: Date.now(), platform: 'Instagram', url: '#' }];
+            handleNestedPropChange('contact', 'social', newSocials);
+        };
+    
+        const removeSocial = (index: number) => {
+            const newSocials = props.contact.social.filter((_: any, i: number) => i !== index);
+            handleNestedPropChange('contact', 'social', newSocials);
+        };
+    
+        const LinkEditor: React.FC<{ listName: 'quickLinks' | 'stores' }> = ({ listName }) => (
+            <div className="space-y-4 p-4 border rounded-lg bg-white">
+                <TextInput 
+                    label={`Título de "${props[listName].title}"`} 
+                    value={props[listName].title} 
+                    onChange={e => handleNestedPropChange(listName, 'title', e.target.value)} 
+                />
+                <div className="space-y-4">
+                    {props[listName].links.map((link: any, index: number) => (
+                        <div key={link.id} className="p-4 border rounded-lg bg-stone-50 space-y-3">
+                            <TextInput label="Texto del Enlace" value={link.text} onChange={e => handleLinkListChange(listName, index, 'text', e.target.value)} />
+                            <TextInput label="URL del Enlace" value={link.url} onChange={e => handleLinkListChange(listName, index, 'url', e.target.value)} />
+                            <button onClick={() => removeLink(listName, index)} className="text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Enlace</button>
+                        </div>
+                    ))}
+                </div>
+                <button onClick={() => addLink(listName)} className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm">Añadir Enlace</button>
+            </div>
+        );
+        
+        return (
+            <SectionEditor section={section}>
+                <div className="space-y-6">
+                    <div>
+                        <h4 className="text-md font-bold text-stone-700 mb-2">Enlaces Rápidos</h4>
+                        <LinkEditor listName="quickLinks" />
+                    </div>
+                    <div className="pt-6 border-t">
+                        <h4 className="text-md font-bold text-stone-700 mb-2">Tiendas</h4>
+                        <LinkEditor listName="stores" />
+                    </div>
+                    <div className="pt-6 border-t">
+                        <h4 className="text-md font-bold text-stone-700 mb-2">Contacto y Redes Sociales</h4>
+                        <div className="space-y-4 p-4 border rounded-lg bg-white">
+                            <TextInput label="Título de la sección" value={props.contact.title} onChange={e => handleNestedPropChange('contact', 'title', e.target.value)} />
+                            <TextInput label="Email de Contacto" value={props.contact.email} onChange={e => handleNestedPropChange('contact', 'email', e.target.value)} />
+                            <h5 className="text-sm font-bold text-stone-600 pt-2">Redes Sociales</h5>
+                            <div className="space-y-4">
+                                {props.contact.social.map((social: any, index: number) => (
+                                    <div key={social.id} className="p-4 border rounded-lg bg-stone-50 space-y-3">
+                                        <div>
+                                            <label className="block text-sm font-medium text-stone-700 mb-1">Plataforma</label>
+                                            <select value={social.platform} onChange={e => handleSocialChange(index, 'platform', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                <option value="Instagram">Instagram</option>
+                                                <option value="Facebook">Facebook</option>
+                                            </select>
+                                        </div>
+                                        <TextInput label="URL del Perfil" value={social.url} onChange={e => handleSocialChange(index, 'url', e.target.value)} />
+                                        <button onClick={() => removeSocial(index)} className="text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Red Social</button>
+                                    </div>
+                                ))}
+                            </div>
+                             <button onClick={addSocial} className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm">Añadir Red Social</button>
+                        </div>
+                    </div>
+                    <div className="pt-6 border-t">
+                         <TextareaInput label="Texto de Copyright" value={props.copyrightText} onChange={e => handlePropChange('copyrightText', e.target.value)} />
+                    </div>
+                </div>
+            </SectionEditor>
+        );
+    },
 };
 
 const SectionsManager: React.FC<{
@@ -375,6 +583,13 @@ const SectionsManager: React.FC<{
     const handleMoveSection = (index: number, direction: 'up' | 'down') => {
         const newSections = [...localContent.sections];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        
+        // Prevent moving header/footer from their spots
+        if (newSections[index].id === 'header' || newSections[index].id === 'footer' ||
+            newSections[targetIndex].id === 'header' || newSections[targetIndex].id === 'footer') {
+            return;
+        }
+
         if (targetIndex < 0 || targetIndex >= newSections.length) return;
         [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]]; // Swap
         setLocalContent({ ...localContent, sections: newSections });
@@ -384,27 +599,34 @@ const SectionsManager: React.FC<{
         <div>
             <h3 className="text-xl font-bold text-stone-700 mb-4">Gestionar Secciones</h3>
             <ul className="space-y-3">
-                {localContent.sections.map((section, index) => (
-                    <li key={section.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border">
-                        <div className="flex items-center gap-4">
-                            <div className="flex flex-col gap-2">
-                                <button onClick={() => handleMoveSection(index, 'up')} disabled={index === 0} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronUpIcon /></button>
-                                <button onClick={() => handleMoveSection(index, 'down')} disabled={index === localContent.sections.length - 1} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronDownIcon /></button>
+                {localContent.sections.map((section, index) => {
+                    const isHeader = section.id === 'header';
+                    const isFooter = section.id === 'footer';
+                    const isFixed = isHeader || isFooter;
+
+                    return (
+                        <li key={section.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border">
+                            <div className="flex items-center gap-4">
+                                <div className="flex flex-col gap-2">
+                                    <button onClick={() => handleMoveSection(index, 'up')} disabled={isFixed || index === 1} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronUpIcon /></button>
+                                    <button onClick={() => handleMoveSection(index, 'down')} disabled={isFixed || index === localContent.sections.length - 2} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronDownIcon /></button>
+                                </div>
+                                <span className="font-bold text-stone-800">{section.name}</span>
+                                {isFixed && <span className="text-xs font-semibold bg-stone-200 text-stone-600 px-2 py-1 rounded-full">Fijo</span>}
                             </div>
-                            <span className="font-bold text-stone-800">{section.name}</span>
-                        </div>
-                        <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-0 border-stone-200">
-                             <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-stone-600">Visible</span>
-                                <ToggleSwitch checked={section.isVisible} onChange={() => handleToggleVisibility(section.id)} />
+                            <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-0 border-stone-200">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-stone-600">Visible</span>
+                                    <ToggleSwitch label="" checked={section.isVisible} onChange={() => handleToggleVisibility(section.id)} />
+                                </div>
+                                <button onClick={() => setEditingSectionId(section.id)} className="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center gap-2 text-sm">
+                                    <EditIcon />
+                                    Editar
+                                </button>
                             </div>
-                            <button onClick={() => setEditingSectionId(section.id)} className="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center gap-2 text-sm">
-                                <EditIcon />
-                                Editar
-                            </button>
-                        </div>
-                    </li>
-                ))}
+                        </li>
+                    )
+                })}
             </ul>
         </div>
     );

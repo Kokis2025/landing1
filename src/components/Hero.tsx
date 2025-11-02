@@ -7,9 +7,10 @@ interface HeroProps {
     rightImageUrl: string;
     ctaButtonText: string;
     ctaButtonLink: string;
+    isCtaButtonVisible: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subtitle, leftImageUrl, rightImageUrl, ctaButtonText, ctaButtonLink }) => {
+const Hero: React.FC<HeroProps> = ({ title, subtitle, leftImageUrl, rightImageUrl, ctaButtonText, ctaButtonLink, isCtaButtonVisible }) => {
     return (
         <section className="relative w-full flex flex-col md:flex-row items-stretch bg-amber-50" style={{ minHeight: '80vh' }}>
             {/* Left side with text and background image */}
@@ -25,16 +26,18 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, leftImageUrl, rightImageUr
                     <p className="text-lg md:text-xl mb-8" style={{ textShadow: '1px 1px 6px rgba(0,0,0,0.6)' }}>
                         {subtitle}
                     </p>
-                    <a
-                        href={ctaButtonLink}
-                        style={{ 
-                            backgroundColor: 'var(--color-button)', 
-                            color: 'var(--color-button-text)' 
-                        }}
-                        className="font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 hover:brightness-95 duration-300 ease-in-out shadow-lg hover:shadow-xl inline-block"
-                    >
-                        {ctaButtonText}
-                    </a>
+                    {isCtaButtonVisible && (
+                        <a
+                            href={ctaButtonLink}
+                            style={{ 
+                                backgroundColor: 'var(--color-button)', 
+                                color: 'var(--color-button-text)' 
+                            }}
+                            className="font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 hover:brightness-95 duration-300 ease-in-out shadow-lg hover:shadow-xl inline-block"
+                        >
+                            {ctaButtonText}
+                        </a>
+                    )}
                 </div>
             </div>
 

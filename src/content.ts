@@ -95,6 +95,7 @@ export const initialContent = {
                 subtitle: 'Descubre la serie ‘Las Aventuras de Capi y Hely’: cuentos que educan, inspiran y fortalecen el vínculo familiar.',
                 ctaButtonText: 'Descubrir los libros',
                 ctaButtonLink: '#books',
+                isCtaButtonVisible: true,
                 leftImageUrl: 'https://i.imgur.com/i3aD4l4.jpeg',
                 rightImageUrl: 'https://i.imgur.com/gK2x3nB.jpeg'
             }
@@ -107,10 +108,21 @@ export const initialContent = {
             props: {
                 iconUrl: 'https://i.imgur.com/3c83aJ0.png',
                 title: 'Nuestros Libros',
-                books: [
-                    { id: 1, title: 'Las Aventuras de Capi, el capibara valiente', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Una emocionante historia sobre valentía y amistad. Capi se embarca en una aventura para ayudar a sus amigos del bosque.' },
-                    { id: 2, title: 'El Árbol Encantado, aventuras de Capi y Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Capi y Hely descubren un árbol mágico que les enseña sobre la importancia de cuidar la naturaleza y trabajar en equipo.' },
-                    { id: 3, title: 'The Enchanted Tree – Adventures of Capi and Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'The English version of the magical adventure. Perfect for bilingual families and young language learners!' },
+                bookSections: [
+                    { 
+                        id: 1, 
+                        title: 'Libros Impresos', 
+                        books: [
+                            { id: 1, title: 'Las Aventuras de Capi, el capibara valiente', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Una emocionante historia sobre valentía y amistad. Capi se embarca en una aventura para ayudar a sus amigos del bosque.' },
+                            { id: 2, title: 'El Árbol Encantado, aventuras de Capi y Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Capi y Hely descubren un árbol mágico que les enseña sobre la importancia de cuidar la naturaleza y trabajar en equipo.' },
+                            { id: 3, title: 'The Enchanted Tree – Adventures of Capi and Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'The English version of the magical adventure. Perfect for bilingual families and young language learners!' },
+                        ]
+                    },
+                    {
+                        id: 2,
+                        title: 'eBooks',
+                        books: []
+                    }
                 ]
             }
         },
