@@ -43,8 +43,8 @@ const MultiLangTextInput: React.FC<{ label: string; value: LangObject; onChange:
     <div>
         <label className="block text-sm font-medium text-stone-700 mb-2">{label}</label>
         <div className="space-y-2">
-            <input type="text" placeholder="Español" value={value.es} onChange={(e) => onChange({ ...value, es: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <input type="text" placeholder="English" value={value.en} onChange={(e) => onChange({ ...value, en: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="text" placeholder="Español" value={value?.es || ''} onChange={(e) => onChange({ ...value, es: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="text" placeholder="English" value={value?.en || ''} onChange={(e) => onChange({ ...value, en: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
     </div>
 );
@@ -53,8 +53,8 @@ const MultiLangTextareaInput: React.FC<{ label: string; value: LangObject; onCha
     <div>
         <label className="block text-sm font-medium text-stone-700 mb-2">{label}</label>
         <div className="space-y-2">
-            <textarea placeholder="Español" value={value.es} onChange={(e) => onChange({ ...value, es: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <textarea placeholder="English" value={value.en} onChange={(e) => onChange({ ...value, en: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <textarea placeholder="Español" value={value?.es || ''} onChange={(e) => onChange({ ...value, es: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <textarea placeholder="English" value={value?.en || ''} onChange={(e) => onChange({ ...value, en: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
     </div>
 );
@@ -126,6 +126,33 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
         <SectionEditor section={section}>
             <MultiLangTextInput label="Título de la Página" value={section.props.pageTitle} onChange={val => onUpdate({ ...section.props, pageTitle: val })} />
             <ImageInput label="Logo" imageUrl={section.props.logoUrl} onImageChange={url => onUpdate({ ...section.props, logoUrl: url })} />
+            <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Alineación</label>
+                <div className="flex gap-1 p-1 border border-stone-200 rounded-lg bg-stone-200/70 w-min">
+                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm">
+                        <input
+                            type="radio"
+                            name="alignment"
+                            value="left"
+                            checked={section.props.alignment === 'left' || !section.props.alignment}
+                            onChange={() => onUpdate({ ...section.props, alignment: 'left' })}
+                            className="sr-only"
+                        />
+                        <span className="text-sm font-semibold">Izquierda</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm">
+                        <input
+                            type="radio"
+                            name="alignment"
+                            value="center"
+                            checked={section.props.alignment === 'center'}
+                            onChange={() => onUpdate({ ...section.props, alignment: 'center' })}
+                            className="sr-only"
+                        />
+                        <span className="text-sm font-semibold">Centro</span>
+                    </label>
+                </div>
+            </div>
         </SectionEditor>
     ),
     Hero: ({ section, onUpdate }) => (

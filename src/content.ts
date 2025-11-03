@@ -85,7 +85,8 @@ export const initialContent = {
                 pageTitle: {
                     es: 'Las Aventuras de Capi y Hely',
                     en: 'The Adventures of Capi and Hely'
-                }
+                },
+                alignment: 'left'
             }
         },
         {
