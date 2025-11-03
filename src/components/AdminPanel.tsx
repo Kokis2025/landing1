@@ -1,4 +1,3 @@
-// FIX: Import useState and useEffect from React to resolve errors where these hooks were used but not defined.
 import React, { useState, useEffect } from 'react';
 import { initialContent, PredefinedScheme, predefinedSchemes, Section } from '../content';
 import { supabase } from '../supabaseClient';
@@ -26,17 +25,10 @@ const handleFileUpload = async (file: File, callback: (url: string) => void) => 
             .from('landing-images')
             .upload(filePath, file);
 
-        if (uploadError) {
-            throw uploadError;
-        }
+        if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage
-            .from('landing-images')
-            .getPublicUrl(filePath);
-
-        if (!data || !data.publicUrl) {
-            throw new Error("No se pudo obtener la URL pública del archivo.");
-        }
+        const { data } = supabase.storage.from('landing-images').getPublicUrl(filePath);
+        if (!data || !data.publicUrl) throw new Error("Could not get public URL for file.");
         
         callback(data.publicUrl);
     } catch (error) {
@@ -79,19 +71,9 @@ const ColorInput: React.FC<{ label: string; value: string; onChange: (color: str
         <label className="block text-sm font-medium text-stone-700 mb-1">{label}</label>
         <div className="flex items-center gap-2 p-2 border border-stone-300 rounded-lg bg-white">
             <div className="relative w-8 h-8 rounded-md overflow-hidden border border-stone-200">
-                <input
-                    type="color"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                />
+                <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
             </div>
-            <input
-                type="text"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full font-mono text-sm tracking-wider focus:outline-none"
-            />
+            <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="w-full font-mono text-sm tracking-wider focus:outline-none" />
         </div>
     </div>
 );
@@ -127,20 +109,11 @@ const ImageInput: React.FC<{ label: string; imageUrl: string; onImageChange: (ur
                 <div className="flex-grow w-full">
                     {isUploading ? (
                         <div className="flex items-center gap-2 text-sm text-stone-500">
-                            <svg className="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                            <svg className="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             <span>Subiendo...</span>
                         </div>
                     ) : (
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            disabled={isUploading}
-                            className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                        />
+                        <input type="file" accept="image/*" onChange={handleFileChange} disabled={isUploading} className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
                     )}
                 </div>
             </div>
@@ -152,35 +125,20 @@ const ImageInput: React.FC<{ label: string; imageUrl: string; onImageChange: (ur
 const ToggleSwitch: React.FC<{ label: string, checked: boolean; onChange: (checked: boolean) => void }> = ({ label, checked, onChange }) => (
     <div className="flex items-center justify-between">
         <label className="block text-sm font-medium text-stone-700">{label}</label>
-        <button
-            type="button"
-            className={`${
-                checked ? 'bg-indigo-600' : 'bg-stone-300'
-            } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-            role="switch"
-            aria-checked={checked}
-            onClick={() => onChange(!checked)}
-        >
-            <span
-                className={`${
-                    checked ? 'translate-x-6' : 'translate-x-1'
-                } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
-            />
+        <button type="button" className={`${checked ? 'bg-indigo-600' : 'bg-stone-300'} relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`} role="switch" aria-checked={checked} onClick={() => onChange(!checked)}>
+            <span className={`${checked ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 transform bg-white rounded-full transition-transform`} />
         </button>
     </div>
 );
 
 
 // --- Section Editors ---
-
-const SectionEditor: React.FC<{ section: Section; children: React.ReactNode }> = ({ section, children }) => {
-     return (
-        <div className="space-y-6 p-4 sm:p-6 bg-stone-50 rounded-lg border">
-            <h3 className="text-xl font-bold text-stone-900">{section.name}</h3>
-            {children}
-        </div>
-    );
-};
+const SectionEditor: React.FC<{ section: Section; children: React.ReactNode }> = ({ section, children }) => (
+    <div className="space-y-6 p-4 sm:p-6 bg-stone-50 rounded-lg border">
+        <h3 className="text-xl font-bold text-stone-900">{section.name}</h3>
+        {children}
+    </div>
+);
 
 const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps: any) => void }> } = {
     Header: ({ section, onUpdate }) => (
@@ -190,28 +148,8 @@ const editors: { [key: string]: React.FC<{ section: Section; onUpdate: (newProps
             <div>
                 <label className="block text-sm font-medium text-stone-700 mb-2">Alineación</label>
                 <div className="flex gap-1 p-1 border border-stone-200 rounded-lg bg-stone-200/70 w-min">
-                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm">
-                        <input
-                            type="radio"
-                            name="alignment"
-                            value="left"
-                            checked={section.props.alignment === 'left' || !section.props.alignment}
-                            onChange={() => onUpdate({ ...section.props, alignment: 'left' })}
-                            className="sr-only"
-                        />
-                        <span className="text-sm font-semibold">Izquierda</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm">
-                        <input
-                            type="radio"
-                            name="alignment"
-                            value="center"
-                            checked={section.props.alignment === 'center'}
-                            onChange={() => onUpdate({ ...section.props, alignment: 'center' })}
-                            className="sr-only"
-                        />
-                        <span className="text-sm font-semibold">Centro</span>
-                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm"><input type="radio" name="alignment" value="left" checked={section.props.alignment === 'left' || !section.props.alignment} onChange={() => onUpdate({ ...section.props, alignment: 'left' })} className="sr-only" /> Izquierda</label>
+                    <label className="flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md has-[:checked]:bg-white has-[:checked]:shadow-sm"><input type="radio" name="alignment" value="center" checked={section.props.alignment === 'center'} onChange={() => onUpdate({ ...section.props, alignment: 'center' })} className="sr-only" /> Centro</label>
                 </div>
             </div>
         </SectionEditor>
@@ -244,13 +182,9 @@ const SectionsManager: React.FC<{
         const newSections = [...localContent.sections];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         
-        if (newSections[index].id === 'header' || newSections[index].id === 'footer' ||
-            newSections[targetIndex].id === 'header' || newSections[targetIndex].id === 'footer') {
-            return;
-        }
-
+        if (newSections[index].id === 'header' || newSections[index].id === 'footer' || newSections[targetIndex].id === 'header' || newSections[targetIndex].id === 'footer') return;
         if (targetIndex < 1 || targetIndex >= newSections.length - 1) return;
-        [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]]; // Swap
+        [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]];
         setLocalContent({ ...localContent, sections: newSections });
     };
     
@@ -263,19 +197,13 @@ const SectionsManager: React.FC<{
                     return (
                         <li key={section.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border">
                             <div className="flex items-center gap-4">
-                                <div className="flex flex-col gap-2">
-                                    <button onClick={() => handleMoveSection(index, 'up')} disabled={isFixed || index <= 1} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronUpIcon /></button>
-                                    <button onClick={() => handleMoveSection(index, 'down')} disabled={isFixed || index >= localContent.sections.length - 2} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronDownIcon /></button>
-                                </div>
+                                <div className="flex flex-col gap-2"><button onClick={() => handleMoveSection(index, 'up')} disabled={isFixed || index <= 1} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronUpIcon /></button><button onClick={() => handleMoveSection(index, 'down')} disabled={isFixed || index >= localContent.sections.length - 2} className="disabled:opacity-20 disabled:cursor-not-allowed text-stone-500 hover:text-stone-800"><ChevronDownIcon /></button></div>
                                 <span className="font-bold text-stone-800">{section.name}</span>
                                 {isFixed && <span className="text-xs font-semibold bg-stone-200 text-stone-600 px-2 py-1 rounded-full">Fijo</span>}
                             </div>
                             <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-0 border-stone-200">
                                 <ToggleSwitch label="Visible" checked={section.isVisible} onChange={() => handleToggleVisibility(section.id)} />
-                                <button onClick={() => setEditingSectionId(section.id)} className="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center gap-2 text-sm">
-                                    <EditIcon />
-                                    Editar
-                                </button>
+                                <button onClick={() => setEditingSectionId(section.id)} className="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center gap-2 text-sm"><EditIcon /> Editar</button>
                             </div>
                         </li>
                     )
@@ -290,64 +218,38 @@ const ColorManager: React.FC<{
     setLocalContent: React.Dispatch<React.SetStateAction<typeof initialContent>>;
 }> = ({ localContent, setLocalContent }) => {
     const handleThemeChange = (themeUpdate: Partial<typeof initialContent.theme>) => {
-        setLocalContent(prev => ({
-            ...prev,
-            theme: { ...prev.theme, ...themeUpdate }
-        }));
+        setLocalContent(prev => ({ ...prev, theme: { ...prev.theme, ...themeUpdate } }));
     };
 
     const handleColorChange = (key: keyof typeof initialContent.theme.colors, value: string) => {
-         handleThemeChange({
-            activeSchemeId: 'custom',
-            colors: {
-                ...localContent.theme.colors,
-                [key]: value
-            }
-         });
+         handleThemeChange({ activeSchemeId: 'custom', colors: { ...localContent.theme.colors, [key]: value } });
     };
     
     const applyScheme = (scheme: PredefinedScheme) => {
-        handleThemeChange({
-            activeSchemeId: scheme.id,
-            colors: { ...scheme.colors }
-        });
+        handleThemeChange({ activeSchemeId: scheme.id, colors: { ...scheme.colors } });
     };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            <div className="space-y-4">
+            <div>
                 <h3 className="text-lg font-bold text-stone-800">Esquemas Predefinidos</h3>
-                <div className="space-y-3">
+                <div className="space-y-3 mt-4">
                     {predefinedSchemes.map(scheme => (
-                        <button
-                            key={scheme.id}
-                            onClick={() => applyScheme(scheme)}
-                            className={`w-full text-left p-4 border rounded-lg transition-all duration-200 ${localContent.theme.activeSchemeId === scheme.id ? 'border-indigo-500 ring-2 ring-indigo-200 bg-white' : 'bg-white hover:border-stone-400'}`}
-                        >
-                            <div className="flex justify-between items-center">
-                                <span className="font-semibold">{scheme.name}</span>
-                                {localContent.theme.activeSchemeId === scheme.id && <span className="text-xs font-bold bg-slate-800 text-white px-2 py-1 rounded-full">Activo</span>}
-                            </div>
-                            <div className="flex items-center gap-3 mt-2">
-                                {Object.values(scheme.colors).map((color, index) => (
-                                    <div key={index} style={{ backgroundColor: color }} className="w-6 h-6 rounded-full border border-stone-200 shadow-inner"></div>
-                                ))}
-                            </div>
+                        <button key={scheme.id} onClick={() => applyScheme(scheme)} className={`w-full text-left p-4 border rounded-lg transition-all ${localContent.theme.activeSchemeId === scheme.id ? 'border-indigo-500 ring-2 ring-indigo-200 bg-white' : 'bg-white hover:border-stone-400'}`}>
+                            <div className="flex justify-between items-center"><span className="font-semibold">{scheme.name}</span>{localContent.theme.activeSchemeId === scheme.id && <span className="text-xs font-bold bg-slate-800 text-white px-2 py-1 rounded-full">Activo</span>}</div>
+                            <div className="flex items-center gap-3 mt-2">{Object.values(scheme.colors).map((color, index) => (<div key={index} style={{ backgroundColor: color }} className="w-6 h-6 rounded-full border border-stone-200 shadow-inner"></div>))}</div>
                         </button>
                     ))}
                 </div>
             </div>
-
-            <div className="space-y-6">
-                <div>
-                     <h3 className="text-lg font-bold text-stone-800">Personalización</h3>
-                     <div className="mt-4 p-6 bg-white rounded-lg border space-y-4">
-                        <ColorInput label="Color Principal (Títulos, iconos)" value={localContent.theme.colors.primary} onChange={c => handleColorChange('primary', c)} />
-                        <ColorInput label="Color Botones" value={localContent.theme.colors.button} onChange={c => handleColorChange('button', c)} />
-                        <ColorInput label="Color Texto de Botones" value={localContent.theme.colors.buttonText} onChange={c => handleColorChange('buttonText', c)} />
-                        <ColorInput label="Color Ofertas (CTA)" value={localContent.theme.colors.offer} onChange={c => handleColorChange('offer', c)} />
-                        <ColorInput label="Color Texto de Ofertas" value={localContent.theme.colors.offerText} onChange={c => handleColorChange('offerText', c)} />
-                    </div>
+            <div>
+                 <h3 className="text-lg font-bold text-stone-800">Personalización</h3>
+                 <div className="mt-4 p-6 bg-white rounded-lg border space-y-4">
+                    <ColorInput label="Color Principal (Títulos, iconos)" value={localContent.theme.colors.primary} onChange={c => handleColorChange('primary', c)} />
+                    <ColorInput label="Color Botones" value={localContent.theme.colors.button} onChange={c => handleColorChange('button', c)} />
+                    <ColorInput label="Color Texto de Botones" value={localContent.theme.colors.buttonText} onChange={c => handleColorChange('buttonText', c)} />
+                    <ColorInput label="Color Ofertas (CTA)" value={localContent.theme.colors.offer} onChange={c => handleColorChange('offer', c)} />
+                    <ColorInput label="Color Texto de Ofertas" value={localContent.theme.colors.offerText} onChange={c => handleColorChange('offerText', c)} />
                 </div>
             </div>
         </div>
@@ -372,20 +274,14 @@ const AdminPanel: React.FC<{ content: typeof initialContent; onContentChange: (c
     const handleLogout = async () => {
         if (!supabase) return;
         const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error("Error signing out:", error);
-        } else {
-            window.location.reload(); 
-        }
+        if (error) console.error("Error signing out:", error);
+        else window.location.reload();
     };
     
     const EditorComponent = editingSectionId ? editors[localContent.sections.find(s => s.id === editingSectionId)!.component] : null;
 
     const TabButton: React.FC<{ tabId: 'sections' | 'colors'; children: React.ReactNode }> = ({ tabId, children }) => (
-        <button
-            onClick={() => { setActiveTab(tabId); setEditingSectionId(null); }}
-            className={`px-4 py-2 text-sm font-semibold rounded-md flex items-center transition-colors ${activeTab === tabId ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:bg-stone-200/50'}`}
-        >
+        <button onClick={() => { setActiveTab(tabId); setEditingSectionId(null); }} className={`px-4 py-2 text-sm font-semibold rounded-md flex items-center transition-colors ${activeTab === tabId ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:bg-stone-200/50'}`}>
             {children}
         </button>
     );
@@ -394,16 +290,8 @@ const AdminPanel: React.FC<{ content: typeof initialContent; onContentChange: (c
         <div className="fixed inset-0 bg-black/60 z-[100] flex justify-end" onClick={onClose}>
             <div className="w-full sm:max-w-3xl lg:max-w-5xl bg-stone-100 h-full shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-wrap justify-between items-center gap-y-2 p-3 sm:p-4 border-b bg-stone-50">
-                    <div className="flex items-center gap-2">
-                        <h2 className="text-lg sm:text-xl font-bold text-stone-800 mr-4">Administración</h2>
-                        <div className="flex items-center p-1 bg-stone-200/70 rounded-lg">
-                           <TabButton tabId="sections"><ListIcon /> Secciones</TabButton>
-                           <TabButton tabId="colors"><PaintBrushIcon /> Colores</TabButton>
-                        </div>
-                    </div>
-                    <button onClick={onClose} className="text-stone-500 hover:text-stone-800 p-2 rounded-full hover:bg-stone-200">
-                        <CloseIcon />
-                    </button>
+                    <div className="flex items-center gap-2"><h2 className="text-lg sm:text-xl font-bold text-stone-800 mr-4">Administración</h2><div className="flex items-center p-1 bg-stone-200/70 rounded-lg"><TabButton tabId="sections"><ListIcon /> Secciones</TabButton><TabButton tabId="colors"><PaintBrushIcon /> Colores</TabButton></div></div>
+                    <button onClick={onClose} className="text-stone-500 hover:text-stone-800 p-2 rounded-full hover:bg-stone-200"><CloseIcon /></button>
                 </div>
                 
                 <div className="p-4 sm:p-6 overflow-y-auto flex-grow">
@@ -413,24 +301,16 @@ const AdminPanel: React.FC<{ content: typeof initialContent; onContentChange: (c
                                 <button onClick={() => setEditingSectionId(null)} className="mb-6 text-indigo-600 font-semibold hover:underline">← Volver a Secciones</button>
                                 <EditorComponent section={localContent.sections.find(s => s.id === editingSectionId)!} onUpdate={(newProps) => handleUpdateSectionProps(editingSectionId, newProps)} />
                             </div>
-                        ) : (
-                            <SectionsManager localContent={localContent} setLocalContent={setLocalContent} setEditingSectionId={setEditingSectionId} />
-                        )
+                        ) : <SectionsManager localContent={localContent} setLocalContent={setLocalContent} setEditingSectionId={setEditingSectionId} />
                     )}
-                    {activeTab === 'colors' && (
-                        <ColorManager localContent={localContent} setLocalContent={setLocalContent} />
-                    )}
+                    {activeTab === 'colors' && <ColorManager localContent={localContent} setLocalContent={setLocalContent} />}
                 </div>
                 
                 <div className="p-4 border-t bg-white flex flex-col-reverse sm:flex-row justify-between items-center gap-3 sm:gap-4">
                      <button onClick={handleLogout} className="w-full sm:w-auto bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 px-6 rounded-lg transition-colors">Cerrar Sesión</button>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                        <button onClick={onClose} className="w-full sm:w-auto bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold py-2 px-6 rounded-lg">
-                            Cancelar
-                        </button>
-                         <button onClick={handleSaveChanges} className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md">
-                            Guardar Cambios
-                        </button>
+                        <button onClick={onClose} className="w-full sm:w-auto bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold py-2 px-6 rounded-lg">Cancelar</button>
+                         <button onClick={handleSaveChanges} className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md">Guardar Cambios</button>
                     </div>
                 </div>
             </div>

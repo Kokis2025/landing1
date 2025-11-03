@@ -3,7 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 // --- CONFIGURACIÓN PARA PRODUCCIÓN ---
 // Leemos las variables de entorno para una conexión segura.
 // Estas variables las configurarás en tu servicio de hosting (ej. Vercel).
-// FIX: Cast `import.meta` to `any` to resolve TypeScript error about missing 'env' property.
+// FIX: Cast `import.meta` to `any` to access the `env` property. This is a workaround for TypeScript not having Vite's `import.meta.env` type definitions.
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
 const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
 
@@ -69,6 +69,7 @@ DROP POLICY IF EXISTS "Allow anonymous uploads to landing-images" ON storage.obj
 DROP POLICY IF EXISTS "Allow anonymous access to landing-images" ON storage.objects;
 
 -- Permite que cualquiera suba imágenes.
+-- NOTA: Podrías restringir esto a usuarios 'authenticated' si quieres máxima seguridad.
 CREATE POLICY "Allow anonymous uploads to landing-images"
 ON storage.objects FOR INSERT
 TO anon
@@ -82,6 +83,6 @@ USING ( bucket_id = 'landing-images' );
 
 -- --- PASO FINAL: CREA TU USUARIO ---
 -- 1. Ve a Supabase -> Authentication -> Users.
--- 2. Haz clic en "Add user".
+-- 2. Haz clic en "Invite user" o "Add user".
 -- 3. Crea tu usuario con un email y contraseña. Estas serán tus credenciales para la página /login.
 */
