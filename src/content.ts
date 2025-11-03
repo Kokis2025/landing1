@@ -82,7 +82,10 @@ export const initialContent = {
             isVisible: true,
             props: {
                 logoUrl: 'https://i.imgur.com/3Z6k85v.png',
-                pageTitle: 'Las Aventuras de Capi y Hely'
+                pageTitle: {
+                    es: 'Las Aventuras de Capi y Hely',
+                    en: 'The Adventures of Capi and Hely'
+                }
             }
         },
         {
@@ -91,9 +94,18 @@ export const initialContent = {
             component: 'Hero',
             isVisible: true,
             props: {
-                title: 'Historias que despiertan valores y abrazan la imaginación',
-                subtitle: 'Descubre la serie ‘Las Aventuras de Capi y Hely’: cuentos que educan, inspiran y fortalecen el vínculo familiar.',
-                ctaButtonText: 'Descubrir los libros',
+                title: {
+                    es: 'Historias que despiertan valores y abrazan la imaginación',
+                    en: 'Stories that awaken values and embrace imagination'
+                },
+                subtitle: {
+                    es: 'Descubre la serie ‘Las Aventuras de Capi y Hely’: cuentos que educan, inspiran y fortalecen el vínculo familiar.',
+                    en: 'Discover the series ‘The Adventures of Capi and Hely’: stories that educate, inspire, and strengthen family bonds.'
+                },
+                ctaButtonText: {
+                    es: 'Descubrir los libros',
+                    en: 'Discover the books'
+                },
                 ctaButtonLink: '#books',
                 isCtaButtonVisible: true,
                 leftImageUrl: 'https://i.imgur.com/i3aD4l4.jpeg',
@@ -107,20 +119,29 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/3c83aJ0.png',
-                title: 'Nuestros Libros',
+                title: {
+                    es: 'Nuestros Libros',
+                    en: 'Our Books'
+                },
                 bookSections: [
                     { 
                         id: 1, 
-                        title: 'Libros Impresos', 
+                        title: {
+                            es: 'Libros Impresos',
+                            en: 'Printed Books'
+                        }, 
                         books: [
-                            { id: 1, title: 'Las Aventuras de Capi, el capibara valiente', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Una emocionante historia sobre valentía y amistad. Capi se embarca en una aventura para ayudar a sus amigos del bosque.' },
-                            { id: 2, title: 'El Árbol Encantado, aventuras de Capi y Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'Capi y Hely descubren un árbol mágico que les enseña sobre la importancia de cuidar la naturaleza y trabajar en equipo.' },
-                            { id: 3, title: 'The Enchanted Tree – Adventures of Capi and Hely', link: '#', store: 'Amazon', imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: 'The English version of the magical adventure. Perfect for bilingual families and young language learners!' },
+                            { id: 1, title: { es: 'Las Aventuras de Capi, el capibara valiente', en: 'The Adventures of Capi, the Brave Capybara' }, link: '#', store: { es: 'Amazon', en: 'Amazon' }, imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: { es: 'Una emocionante historia sobre valentía y amistad. Capi se embarca en una aventura para ayudar a sus amigos del bosque.', en: 'An exciting story about courage and friendship. Capi embarks on an adventure to help his forest friends.' } },
+                            { id: 2, title: { es: 'El Árbol Encantado, aventuras de Capi y Hely', en: 'The Enchanted Tree, Adventures of Capi and Hely' }, link: '#', store: { es: 'Amazon', en: 'Amazon' }, imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: { es: 'Capi y Hely descubren un árbol mágico que les enseña sobre la importancia de cuidar la naturaleza y trabajar en equipo.', en: 'Capi and Hely discover a magical tree that teaches them about the importance of caring for nature and teamwork.' } },
+                            { id: 3, title: { es: 'The Enchanted Tree – Adventures of Capi and Hely', en: 'The Enchanted Tree – Adventures of Capi and Hely' }, link: '#', store: { es: 'Amazon', en: 'Amazon' }, imageUrl: 'https://i.imgur.com/gK2x3nB.jpeg', rating: 5, backsideDescription: { es: 'La versión en inglés de la mágica aventura. ¡Perfecto para familias bilingües y jóvenes aprendices de idiomas!', en: 'The English version of the magical adventure. Perfect for bilingual families and young language learners!' } },
                         ]
                     },
                     {
                         id: 2,
-                        title: 'eBooks',
+                        title: {
+                            es: 'eBooks',
+                            en: 'eBooks'
+                        },
                         books: []
                     }
                 ]
@@ -133,8 +154,14 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/5u9y2fF.png',
-                title: '¡Capi y Hely cobran vida!',
-                description: 'Disfruta de un pequeño corto animado que te sumergirá en el mágico mundo de nuestros personajes. ¡Perfecto para ver en familia!',
+                title: {
+                    es: '¡Capi y Hely cobran vida!',
+                    en: 'Capi and Hely Come to Life!'
+                },
+                description: {
+                    es: 'Disfruta de un pequeño corto animado que te sumergirá en el mágico mundo de nuestros personajes. ¡Perfecto para ver en familia!',
+                    en: 'Enjoy a short animated film that will immerse you in the magical world of our characters. Perfect for family viewing!'
+                },
                 videoId: 'DR_8422d354'
             }
         },
@@ -145,12 +172,24 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/sC22J4s.png',
-                title: '¿Quiénes somos?',
-                paragraph1: 'Hola, soy Jorge, autor y creador de contenido infantil apasionado por sembrar semillas de bondad y curiosidad en los más pequeños.',
-                paragraph2: 'El propósito de esta serie es fomentar valores, potenciar la imaginación y promover el bienestar en niños de 4 a 9 años. Cada historia es una invitación a explorar emociones, aprender herramientas como la respiración consciente y, sobre todo, a compartir momentos mágicos en familia.',
+                title: {
+                    es: '¿Quiénes somos?',
+                    en: 'Who We Are'
+                },
+                paragraph1: {
+                    es: 'Hola, soy Jorge, autor y creador de contenido infantil apasionado por sembrar semillas de bondad y curiosidad en los más pequeños.',
+                    en: 'Hello, I\'m Jorge, an author and creator of children\'s content passionate about planting seeds of kindness and curiosity in little ones.'
+                },
+                paragraph2: {
+                    es: 'El propósito de esta serie es fomentar valores, potenciar la imaginación y promover el bienestar en niños de 4 a 9 años. Cada historia es una invitación a explorar emociones, aprender herramientas como la respiración consciente y, sobre todo, a compartir momentos mágicos en familia.',
+                    en: 'The purpose of this series is to foster values, enhance imagination, and promote well-being in children aged 4 to 9. Each story is an invitation to explore emotions, learn tools like mindful breathing, and, above all, share magical moments as a family.'
+                },
                 signatureImgUrl: 'https://i.imgur.com/g8nYgSg.png',
                 aboutImageUrl: 'https://i.imgur.com/gK2x3nB.jpeg',
-                characterName: 'Capi y Hely'
+                characterName: {
+                    es: 'Capi y Hely',
+                    en: 'Capi and Hely'
+                }
             }
         },
         {
@@ -160,12 +199,15 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/eay7Hwz.png',
-                title: 'Beneficios para tu Familia',
+                title: {
+                    es: 'Beneficios para tu Familia',
+                    en: 'Benefits for Your Family'
+                },
                 items: [
-                    { id: 1, icon: 'Heart', title: "Lectura Consciente", description: "Historias que abordan emociones y enseñan a gestionarlas con amor y empatía." },
-                    { id: 2, icon: 'Leaf', title: "Relajación y Calma", description: "Incluye ejercicios de respiración y afirmaciones para encontrar la paz interior." },
-                    { id: 3, icon: 'Users', title: "Conexión Familiar", description: "Crea un espacio de diálogo y complicidad entre padres, madres e hijos." },
-                    { id: 4, icon: 'Badge', title: "Recomendado por Expertos", description: "Material avalado por educadores y terapeutas infantiles." },
+                    { id: 1, icon: 'Heart', title: { es: "Lectura Consciente", en: "Mindful Reading" }, description: { es: "Historias que abordan emociones y enseñan a gestionarlas con amor y empatía.", en: "Stories that address emotions and teach how to manage them with love and empathy." } },
+                    { id: 2, icon: 'Leaf', title: { es: "Relajación y Calma", en: "Relaxation and Calm" }, description: { es: "Incluye ejercicios de respiración y afirmaciones para encontrar la paz interior.", en: "Includes breathing exercises and affirmations to find inner peace." } },
+                    { id: 3, icon: 'Users', title: { es: "Conexión Familiar", en: "Family Connection" }, description: { es: "Crea un espacio de diálogo y complicidad entre padres, madres e hijos.", en: "Creates a space for dialogue and connection between parents and children." } },
+                    { id: 4, icon: 'Badge', title: { es: "Recomendado por Expertos", en: "Recommended by Experts" }, description: { es: "Material avalado por educadores y terapeutas infantiles.", en: "Content endorsed by educators and child therapists." } },
                 ]
             }
         },
@@ -176,9 +218,18 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/f02yLd1.png',
-                tag: 'BONUS GRATUITO',
-                title: '¡Descarga tu Libro para Colorear!',
-                description: 'Recibe un PDF gratuito con dibujos de Capi y Hely listos para colorear. ¡Una actividad perfecta para desatar la creatividad de tus pequeños artistas!',
+                tag: {
+                    es: 'BONUS GRATUITO',
+                    en: 'FREE BONUS'
+                },
+                title: {
+                    es: '¡Descarga tu Libro para Colorear!',
+                    en: 'Download Your Coloring Book!'
+                },
+                description: {
+                    es: 'Recibe un PDF gratuito con dibujos de Capi y Hely listos para colorear. ¡Una actividad perfecta para desatar la creatividad de tus pequeños artistas!',
+                    en: 'Receive a free PDF with drawings of Capi and Hely ready to color. A perfect activity to unleash your little artists\' creativity!'
+                },
                 imageUrls: [
                     'https://i.imgur.com/sC22J4s.png',
                     'https://i.imgur.com/gK2x3nB.jpeg',
@@ -196,12 +247,15 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/M6NfSg1.png',
-                title: 'Testimonios Reales',
+                title: {
+                    es: 'Testimonios Reales',
+                    en: 'Real Testimonials'
+                },
                 items: [
-                    { id: 1, quote: "Mi hijo espera con ansias la hora del cuento. Capi y Hely son sus nuevos héroes. ¡Una maravilla!", author: "Laura M.", location: "Madrid, España", avatarUrl: "https://i.imgur.com/O5t2n7g.jpeg" },
-                    { id: 2, quote: "Como educadora, valoro el mensaje de fondo. Estos libros son herramientas fantásticas para el aula.", author: "Sofía G.", location: "Buenos Aires, Argentina", avatarUrl: "https://i.imgur.com/kP3B1fW.jpeg" },
-                    { id: 3, quote: "Nos ha ayudado a hablar de emociones en casa de una forma sencilla y divertida. ¡Totalmente recomendado!", author: "Carlos R.", location: "Ciudad de México, México", avatarUrl: "https://i.imgur.com/h5y3O2V.jpeg" },
-                    { id: 4, quote: "Los ejercicios de respiración son geniales. Mi hija los usa antes de dormir y está mucho más tranquila. ¡Gracias!", author: "Ana P.", location: "Santiago, Chile", avatarUrl: "" }
+                    { id: 1, quote: { es: "Mi hijo espera con ansias la hora del cuento. Capi y Hely son sus nuevos héroes. ¡Una maravilla!", en: "My son eagerly awaits story time. Capi and Hely are his new heroes. It's wonderful!" }, author: { es: "Laura M.", en: "Laura M." }, location: { es: "Madrid, España", en: "Madrid, Spain" }, avatarUrl: "https://i.imgur.com/O5t2n7g.jpeg" },
+                    { id: 2, quote: { es: "Como educadora, valoro el mensaje de fondo. Estos libros son herramientas fantásticas para el aula.", en: "As an educator, I value the underlying message. These books are fantastic tools for the classroom." }, author: { es: "Sofía G.", en: "Sofia G." }, location: { es: "Buenos Aires, Argentina", en: "Buenos Aires, Argentina" }, avatarUrl: "https://i.imgur.com/kP3B1fW.jpeg" },
+                    { id: 3, quote: { es: "Nos ha ayudado a hablar de emociones en casa de una forma sencilla y divertida. ¡Totalmente recomendado!", en: "It has helped us talk about emotions at home in a simple and fun way. Highly recommended!" }, author: { es: "Carlos R.", en: "Carlos R." }, location: { es: "Ciudad de México, México", en: "Mexico City, Mexico" }, avatarUrl: "https://i.imgur.com/h5y3O2V.jpeg" },
+                    { id: 4, quote: { es: "Los ejercicios de respiración son geniales. Mi hija los usa antes de dormir y está mucho más tranquila. ¡Gracias!", en: "The breathing exercises are great. My daughter uses them before bed and she is much calmer. Thank you!" }, author: { es: "Ana P.", en: "Ana P." }, location: { es: "Santiago, Chile", en: "Santiago, Chile" }, avatarUrl: "" }
                 ]
             }
         },
@@ -212,9 +266,18 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/aDDUx12.png',
-                title: 'Nuestra Garantía Ética',
-                quote: 'Si no te inspira, te devolvemos la sonrisa',
-                description: 'Estamos seguros del valor que estos cuentos aportarán a tu familia. Creemos en el poder de las historias para cambiar el mundo, empezando por el corazón de un niño.'
+                title: {
+                    es: 'Nuestra Garantía Ética',
+                    en: 'Our Ethical Guarantee'
+                },
+                quote: {
+                    es: 'Si no te inspira, te devolvemos la sonrisa',
+                    en: 'If it doesn\'t inspire you, we\'ll give you back your smile'
+                },
+                description: {
+                    es: 'Estamos seguros del valor que estos cuentos aportarán a tu familia. Creemos en el poder de las historias para cambiar el mundo, empezando por el corazón de un niño.',
+                    en: 'We are confident in the value these stories will bring to your family. We believe in the power of stories to change the world, starting with a child\'s heart.'
+                }
             }
         },
         {
@@ -224,12 +287,15 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/V97H7s8.png',
-                title: 'Preguntas Frecuentes',
+                title: {
+                    es: 'Preguntas Frecuentes',
+                    en: 'Frequently Asked Questions'
+                },
                 items: [
-                    { id: 1, question: "¿Desde qué edad se recomiendan los libros?", answer: "La serie 'Las Aventuras de Capi y Hely' está pensada para niños y niñas de 4 a 9 años." },
-                    { id: 2, question: "¿Cómo se reciben los libros?", answer: "Al comprar a través de Amazon o Lulu, recibirás la versión digital (ebook) directamente en tu dispositivo o cuenta." },
-                    { id: 3, question: "¿Hay versión física de los libros?", answer: "Sí, tanto en Amazon como en Lulu puedes encontrar la opción de impresión bajo demanda." },
-                    { id: 4, question: "¿Qué incluye el PDF gratuito?", answer: "El PDF gratuito es un libro de colorear con los personajes para que los niños se diviertan y desarrollen su creatividad." }
+                    { id: 1, question: { es: "¿Desde qué edad se recomiendan los libros?", en: "From what age are the books recommended?" }, answer: { es: "La serie 'Las Aventuras de Capi y Hely' está pensada para niños y niñas de 4 a 9 años.", en: "The 'Adventures of Capi and Hely' series is designed for children aged 4 to 9." } },
+                    { id: 2, question: { es: "¿Cómo se reciben los libros?", en: "How are the books delivered?" }, answer: { es: "Al comprar a través de Amazon o Lulu, recibirás la versión digital (ebook) directamente en tu dispositivo o cuenta.", en: "When purchasing through Amazon or Lulu, you will receive the digital version (ebook) directly to your device or account." } },
+                    { id: 3, question: { es: "¿Hay versión física de los libros?", en: "Is there a physical version of the books?" }, answer: { es: "Sí, tanto en Amazon como en Lulu puedes encontrar la opción de impresión bajo demanda.", en: "Yes, you can find the print-on-demand option on both Amazon and Lulu." } },
+                    { id: 4, question: { es: "¿Qué incluye el PDF gratuito?", en: "What does the free PDF include?" }, answer: { es: "El PDF gratuito es un libro de colorear con los personajes para que los niños se diviertan y desarrollen su creatividad.", en: "The free PDF is a coloring book with the characters for children to have fun and develop their creativity." } }
                 ]
             }
         },
@@ -240,10 +306,22 @@ export const initialContent = {
             isVisible: true,
             props: {
                 iconUrl: 'https://i.imgur.com/k6Lz1nL.png',
-                title: 'Haz clic y transforma la lectura en bienestar',
-                description: 'Únete a las familias que ya están disfrutando de momentos inolvidables con Capi y Hely.',
-                primaryButtonText: 'Comprar los libros',
-                secondaryButtonText: 'Descargar el PDF gratuito'
+                title: {
+                    es: 'Haz clic y transforma la lectura en bienestar',
+                    en: 'Click and transform reading into well-being'
+                },
+                description: {
+                    es: 'Únete a las familias que ya están disfrutando de momentos inolvidables con Capi y Hely.',
+                    en: 'Join the families who are already enjoying unforgettable moments with Capi and Hely.'
+                },
+                primaryButtonText: {
+                    es: 'Comprar los libros',
+                    en: 'Buy the books'
+                },
+                secondaryButtonText: {
+                    es: 'Descargar el PDF gratuito',
+                    en: 'Download the free PDF'
+                }
             }
         },
         {
@@ -253,29 +331,41 @@ export const initialContent = {
             isVisible: true,
             props: {
                 quickLinks: {
-                    title: 'Enlaces Rápidos',
+                    title: {
+                        es: 'Enlaces Rápidos',
+                        en: 'Quick Links'
+                    },
                     links: [
-                        { id: 1, text: 'Nuestros Libros', url: '#books' },
-                        { id: 2, text: 'PDF Gratuito', url: '#bonus' },
-                        { id: 3, text: 'Preguntas Frecuentes', url: '#faq' },
+                        { id: 1, text: { es: 'Nuestros Libros', en: 'Our Books' }, url: '#books' },
+                        { id: 2, text: { es: 'PDF Gratuito', en: 'Free PDF' }, url: '#bonus' },
+                        { id: 3, text: { es: 'Preguntas Frecuentes', en: 'FAQ' }, url: '#faq' },
                     ]
                 },
                 stores: {
-                    title: 'Tiendas',
+                    title: {
+                        es: 'Tiendas',
+                        en: 'Stores'
+                    },
                     links: [
-                        { id: 1, text: 'Ver en Amazon', url: '#' },
-                        { id: 2, text: 'Ver en Lulu', url: '#' },
+                        { id: 1, text: { es: 'Ver en Amazon', en: 'View on Amazon' }, url: '#' },
+                        { id: 2, text: { es: 'Ver en Lulu', en: 'View on Lulu' }, url: '#' },
                     ]
                 },
                 contact: {
-                    title: 'Contacto y Redes',
+                    title: {
+                        es: 'Contacto y Redes',
+                        en: 'Contact & Social'
+                    },
                     email: 'contacto@autorjorge.com',
                     social: [
                         { id: 1, platform: 'Instagram', url: '#' },
                         { id: 2, platform: 'Facebook', url: '#' },
                     ]
                 },
-                copyrightText: '© {year} Las Aventuras de Capi y Hely. Todos los derechos reservados.'
+                copyrightText: {
+                    es: '© {year} Las Aventuras de Capi y Hely. Todos los derechos reservados.',
+                    en: '© {year} The Adventures of Capi and Hely. All rights reserved.'
+                }
             }
         }
     ]

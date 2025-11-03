@@ -1,12 +1,38 @@
 import React from 'react';
 
+type Language = 'es' | 'en';
+
 interface HeaderProps {
     logoUrl: string;
     pageTitle: string;
     scrolled: boolean;
+    language: Language;
+    onLanguageChange: (lang: Language) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ logoUrl, pageTitle, scrolled }) => {
+const LanguageButton: React.FC<{
+    lang: Language;
+    currentLang: Language;
+    onClick: (lang: Language) => void;
+    children: React.ReactNode;
+}> = ({ lang, currentLang, onClick, children }) => {
+    const isActive = lang === currentLang;
+    return (
+        <button
+            onClick={() => onClick(lang)}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                isActive
+                    ? 'font-bold text-indigo-600'
+                    : 'text-stone-500 hover:text-stone-800'
+            }`}
+        >
+            {children}
+        </button>
+    );
+};
+
+
+const Header: React.FC<HeaderProps> = ({ logoUrl, pageTitle, scrolled, language, onLanguageChange }) => {
     return (
         <header className={`fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md h-20 flex items-center transition-shadow duration-300 ${scrolled ? 'shadow-lg' : 'shadow-md'}`}>
             <div className="container mx-auto px-6 flex justify-between items-center">
@@ -14,7 +40,16 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, pageTitle, scrolled }) => {
                     <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
                     <span className="text-lg sm:text-xl font-bold text-stone-800">{pageTitle}</span>
                 </div>
-                {/* Futuros enlaces de navegación podrían ir aquí */}
+                
+                <div className="flex items-center gap-1">
+                    <LanguageButton lang="es" currentLang={language} onClick={onLanguageChange}>
+                        Español
+                    </LanguageButton>
+                    <span className="text-stone-300">|</span>
+                    <LanguageButton lang="en" currentLang={language} onClick={onLanguageChange}>
+                        English
+                    </LanguageButton>
+                </div>
             </div>
         </header>
     );

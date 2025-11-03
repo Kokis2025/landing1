@@ -21,7 +21,7 @@ interface SocialLink {
     url: string;
 }
 
-interface FooterProps {
+export interface FooterProps {
     quickLinks: { title: string; links: Link[] };
     stores: { title: string; links: Link[] };
     contact: { title: string; email: string; social: SocialLink[] };
