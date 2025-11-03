@@ -12,7 +12,7 @@ export let supabaseInitializationError: string | null = null;
 
 try {
     if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error("Las variables de entorno VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY no están definidas. Asegúrate de configurarlas en tu hosting.");
+        throw new Error("Las variables de entorno VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY no están definidas. Asegúrate de configurarlas en tu hosting (Vercel).");
     }
     supabase = createClient(supabaseUrl, supabaseAnonKey);
 } catch (e) {

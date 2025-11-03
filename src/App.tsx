@@ -26,11 +26,12 @@ type Language = 'es' | 'en';
 
 // Helper to get props in the currently selected language
 const getLocalizedProps = (props: any, lang: Language): any => {
+    if (!props) return {};
     const localized: { [key: string]: any } = {};
     for (const key in props) {
         const value = props[key];
         if (typeof value === 'object' && value !== null && 'es' in value && 'en' in value) {
-            localized[key] = value[lang];
+            localized[key] = value[lang] || value['es']; // Fallback to Spanish
         } else if (Array.isArray(value)) {
              localized[key] = value.map(item => getLocalizedProps(item, lang));
         } else {
@@ -96,15 +97,13 @@ const LandingPage: React.FC = () => {
 
                 if (data?.content_data) {
                     const fetchedData = data.content_data;
-                    // Smart merge to support both old (string) and new ({es, en}) data structures
                     const mergeRecursively = (initial: any, fetched: any): any => {
                         if (typeof initial !== 'object' || initial === null || Array.isArray(initial)) {
-                            return fetched;
+                            return fetched !== undefined ? fetched : initial;
                         }
                         const merged: { [key: string]: any } = { ...initial };
                         for (const key in initial) {
                             if (key in fetched) {
-                                // If initial is a lang object, but fetched is a string (old data)
                                 if (typeof initial[key] === 'object' && 'es' in initial[key] && typeof fetched[key] === 'string') {
                                     merged[key] = { ...initial[key], es: fetched[key] };
                                 } else if (typeof initial[key] === 'object' && initial[key] !== null && typeof fetched[key] === 'object' && fetched[key] !== null) {
@@ -114,26 +113,16 @@ const LandingPage: React.FC = () => {
                                 }
                             }
                         }
-                        return { ...fetched, ...merged }; // Ensure new props from fetched data are also included
+                        return { ...fetched, ...merged };
                     };
-
                     const mergedContent = mergeRecursively(initialContent, fetchedData);
                     setContent(mergedContent);
-
                 } else {
                     await handleContentChange(initialContent, true);
                 }
             } catch (err: any) {
                 console.error("Error fetching content:", err);
-                let message = "Error desconocido.";
-                if (err?.message) {
-                    message = err.message;
-                } else if (typeof err === 'object' && err !== null) {
-                    message = JSON.stringify(err);
-                } else if (err) {
-                    message = String(err);
-                }
-                
+                let message = err?.message || "Error desconocido.";
                 setError(`Error al cargar contenido: ${message}. Por favor, revisa la configuración de Supabase y las políticas de seguridad (RLS).`);
             } finally {
                 setIsLoading(false);
